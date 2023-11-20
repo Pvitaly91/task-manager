@@ -1,5 +1,11 @@
 <?php
 
+use App\Models\Task;
+use App\Models\User;
+use App\Enums\TaskStatus;
+use App\Enums\TaskPriority;
+use App\Repositories\TaskRepository;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,6 +19,15 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+
 Route::get('/', function () {
+  
+   // $rep = new TaskRepository(["id","status"]);
+    //dd($rep->getById("234"));
+    dd(Task::find("234")->checkEditableStatus());
     return view('welcome');
 });
+
+Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

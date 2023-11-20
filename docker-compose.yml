@@ -1,0 +1,24 @@
+version: '3'
+services:
+  web:
+    build: ./web
+    environment:
+      - APACHE_RUN_USER=www-data
+    volumes:
+      - ${APP_PATH_HOST}:${APP_PATH_CONTAINER}
+    ports:
+      - 8580:80
+    working_dir: ${APP_PATH_CONTAINER}
+  db:
+    build: ./db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - ${DB_PATH}:/var/lib/mysql
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 6580:8080
+  

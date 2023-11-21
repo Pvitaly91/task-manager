@@ -22,8 +22,7 @@ return new class extends Migration
             $table->dateTime('completed_at')->nullable();
             $table->timestamps();
             //indexes
-            $table->fullText('description');
-            $table->index('title');
+            $table->fullText(['title', 'description']);
             $table->index('priority');
             $table->index('status');
             $table->index('created_at');

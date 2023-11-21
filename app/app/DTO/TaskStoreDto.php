@@ -7,11 +7,11 @@ class TaskStoreDto extends BaseDTO
 {
     protected static $toCamelCase = false;
     public function __construct(
-        readonly int $parent_id,
-        readonly int $priority,
-        readonly string $status,
-        readonly string $title,
-        readonly string $description,
+        readonly ?int $parent_id = null,
+        readonly ?int $priority = null,
+        readonly ?string $status = null,
+        readonly ?string $title = null,
+        readonly ?string $description = null,
     ) {}
 
     static function setStatusAttribute($value){

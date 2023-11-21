@@ -8,9 +8,10 @@ class TaskRepository{
 
     private array $sort = [];
 
-   
     private $query;
+    private bool $withTree = false; //get tree of sub-tasks for selected task
     public function __construct(
+        
         readonly array $select = [
             "id",
             "parent_id",
@@ -20,11 +21,14 @@ class TaskRepository{
             "description", 
             "created_at", 
             "completed_at"
-        ]
+        ],
+        readonly string $fullTextQuery = "MATCH(description,title) AGAINST(? IN NATURAL LANGUAGE MODE)" // 
     ){
         $this->userId = Request()->user()->id;
     }
-  
+    public function setTreeFlag(bool $tatus){
+        $this->withTree = $tatus;
+    }
     protected function initDafaultTaskQuery(){
         $this->query = Task::query()
             ->select($this->select)->where("user_id",$this->userId);
@@ -39,8 +43,8 @@ class TaskRepository{
         if(($subTasks = $this->getTree($task["id"])) == true)
             $task["subTasks"] = $subTasks; 
     }
-    protected function getSubTasksFromArray(){
-        if(($tasks = $this->query->get()) == true){
+    protected function getSubTasksFromArray($withTree = true){
+        if(($tasks = $this->query->get()) == true && $withTree == true){
             //making tasks tree
             foreach($tasks as &$task){
                 $this->getSubTasks($task);
@@ -53,7 +57,7 @@ class TaskRepository{
         
         $this->query->where("parent_id",$id);
  
-        return $this->getSubTasksFromArray()->toArray();  
+        return $this->getSubTasksFromArray($this->withTree)->toArray();  
     }
     public function setOrder(array $sort):void{
         $this->sort = $sort;
@@ -63,7 +67,7 @@ class TaskRepository{
         $this->initDafaultTaskQuery();
         $this->query->where("parent_id",0); //get root tasks
         
-        return $this->getSubTasksFromArray();
+        return $this->getSubTasksFromArray($this->withTree);
     }
 
     public function getById($id){
@@ -74,7 +78,7 @@ class TaskRepository{
             ->where("id",$id)->first()
             ?->toArray();
         
-        if($task != NULL)
+        if($task != NULL && $this->withTree == true)
             $this->getSubTasks($task);
 
         return $task;
@@ -83,10 +87,20 @@ class TaskRepository{
         $this->initDafaultTaskQuery();
         
         foreach($filter as $filterName => $value){
-            if($value !== NULL)
-                $this->query->where($filterName,$value);
+            if($value !== NULL){
+                if($filterName == "query")
+                    $this->query->whereRaw($this->fullTextQuery, $value);
+                else
+                    $this->query->where($filterName,$value);
+            }
+                
         }
         
-        return $this->getSubTasksFromArray();
+        return $this->getSubTasksFromArray($this->withTree);
+    }
+    public function fullTextSearch($query){
+        $this->initDafaultTaskQuery();
+        $this->query->whereRaw($this->fullTextQuery, $query);
+        return $this->getSubTasksFromArray($this->withTree);
     }
 }

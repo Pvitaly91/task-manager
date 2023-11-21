@@ -25,6 +25,10 @@ class Task extends Model
     public function childExist(){
         return (bool)$this->query()->select("id")->where("parent_id", $this->id)->first();
     }
+
+    public function getTaskStatus(){
+        return $this->query()->select("status")->where("id", $this->id)->first()->status;
+    }
     protected function checkTree($tasks){
         $status = true;
         foreach($tasks as $task){

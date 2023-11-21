@@ -32,6 +32,10 @@ class TaskObserver
     public function updating(Task $task): void
     {
         $this->forbidden($task->user_id,"Update");
+        //check if we try to change task status and can change status
+        if(!$task->checkEditableStatus() && $task->getTaskStatus() != $task->status){
+            Abort(403,"Update not allowed");
+        }
     }
 
     /**

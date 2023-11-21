@@ -10,10 +10,7 @@ class TaskFilterDto extends BaseDto{
     public function __construct(
         readonly ?string $status = null,
         readonly ?int $priority =null,
-        readonly ?string $title =null,
-        readonly ?string $description =null,
-        readonly ?string $created_at =null,
-        readonly ?string $completed_at =null
+        readonly ?string $query =null,
     ) {}
     
     static function setStatusAttribute($value){

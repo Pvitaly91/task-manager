@@ -4,6 +4,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\TaskController;
+use App\Http\Controllers\Api\TestController;
+use App\Http\Controllers\HomeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,10 +18,11 @@ use App\Http\Controllers\Api\TaskController;
 |
 */
 //Auth::loginUsingId(3);
-//Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-  //  Route::group(['middleware' => 'auth:sanctum'], function(){
-    //    Route::apiResource('tasks', TaskController::class);
-  //  });
+
   Route::group(['middleware' => 'auth:sanctum'], function(){  
+    Route::prefix('tasks')->group(function () {
+      Route::put('changeStatus/{task}', [TaskController::class,'changeStatus']);
+    });
     Route::apiResource('tasks', TaskController::class);
+    
   });

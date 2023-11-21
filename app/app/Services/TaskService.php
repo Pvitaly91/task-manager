@@ -7,13 +7,15 @@ use App\DTO\TaskFilterDto;
 use App\Repositories\TaskRepository;
 use App\Http\Requests\TaskSortRequest;
 use App\Http\Requests\TaskFilterRequest;
+use App\Http\Requests\TaskWithTreeRequest;
 
 class TaskService{
     protected $data;
     function __construct(
         readonly TaskRepository $taskRepository,
         readonly TaskSortRequest $sortRequest,   
-        readonly TaskFilterRequest $filterRequest
+        readonly TaskFilterRequest $filterRequest,
+        readonly TaskWithTreeRequest $taskWithTreeRequest
         )
     {
         $this->sort();   
@@ -35,9 +37,14 @@ class TaskService{
     }
 
     protected function filter(){
+
+        if(($teeFlag = $this->taskWithTreeRequest->validated()) == true){ 
+            $this->taskRepository->setTreeFlag($teeFlag["tree"]);
+        }
         if(($filter = $this->filterRequest->validated()) == true ){    
-            $filter = TaskFilterDto::fromArray($filter)->toArray();
-            $tasks = $this->taskRepository->getByCriteria($filter)->toArray();
+
+            $filter = TaskFilterDto::fromArray($filter);
+            $tasks = $this->taskRepository->getByCriteria($filter->toArray())->toArray();
             $this->data = TaskDto::collection($tasks);
         }else{
             $this->data = TaskDto::collection($this->taskRepository->getAll()->toArray());

@@ -8,12 +8,12 @@ class TaskDto extends BaseDTO
 {
     
     public function __construct(
-        readonly ?int $id,
-        readonly string $status,
-        readonly int $priority,
-        readonly string $title,
-        readonly string $description,
-        readonly string $createdAt,
+        readonly ?int $id=null,
+        readonly ?string $status=null,
+        readonly ?int $priority=null,
+        readonly ?string $title=null,
+        readonly ?string $description=null,
+        readonly ?string $createdAt=null,
         readonly ?string $completedAt =null,
         readonly ?array $subTasks = [],
     ) {}

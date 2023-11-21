@@ -21,13 +21,14 @@ class TaskSortRequest extends FormRequest
      */
     public function rules(): array
     {
-            $sort = "in:createdAt,completedAt,priority";
-            $dir = "in:asc,desc";
-        return [
-            "sort" => $sort,
-            "sort1" => $sort,
-            "dir" => $dir,
-            "dir1" => $dir,
-        ];
+        $rules = [];
+        //set quantity of sort fields
+        for($i=0; $i<2; $i++){
+            $suf = ($i == 0)?"":$i;
+            $rules["sort".$suf] = "in:createdAt,completedAt,priority";
+            $rules["dir".$suf] = "in:asc,desc"; 
+        }
+      
+        return $rules;
     }
 }

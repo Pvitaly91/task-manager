@@ -2,13 +2,10 @@
 
 namespace App\Http\Requests;
 
-use App\Enums\TaskStatus;
-use App\Enums\TaskPriority;
 use App\Rules\TaskStatusRule;
-use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class TaskFilterRequest extends FormRequest
+class TaskChangeStatus extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,9 +23,7 @@ class TaskFilterRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "priority" => 'integer|between:'.TaskPriority::min->value.",".TaskPriority::max->value,
-            "query" => "string|max:255",
-            "status" => ["string",new TaskStatusRule]
+            "status" => ["required",new TaskStatusRule]
         ];
     }
 }

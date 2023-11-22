@@ -29,9 +29,10 @@ class TaskService{
                 $fSort = (isset($sort["sort".$suf]))?$sort["sort".$suf]:NULL;
                 $fDir = (isset($sort["dir".$suf]))?$sort["dir".$suf]:"desc";
                 if($fSort != NULL)
-                    $validated[] = new TaskSortDto($fSort,$fDir);
+                    $validated[] = TaskSortDto::fromArray(["sort"=>$fSort,"dir" => $fDir]);
                 
             }
+          
             $this->taskRepository->setOrder($validated);
         }
     }

@@ -21,7 +21,7 @@ use App\Http\Controllers\HomeController;
 
   Route::group(['middleware' => 'auth:sanctum'], function(){  
     Route::prefix('tasks')->group(function () {
-      Route::put('changeStatus/{task}', [TaskController::class,'changeStatus']);
+      Route::patch('changeStatus/{task}', [TaskController::class,'changeStatus']);
     });
     Route::apiResource('tasks', TaskController::class);
     

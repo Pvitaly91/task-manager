@@ -3,7 +3,7 @@ namespace App\Repositories;
 
 use App\Models\Task;
 
-class TaskRepository{
+class TaskRepository  implements RepositoryInterface{
     public int $userId;
 
     private array $sort = [];
@@ -29,6 +29,11 @@ class TaskRepository{
     public function setTreeFlag(bool $tatus){
         $this->withTree = $tatus;
     }
+    /**
+     * initial default query setting
+     *
+     * @return void
+     */
     protected function initDafaultTaskQuery(){
         $this->query = Task::query()
             ->select($this->select)->where("user_id",$this->userId);
@@ -43,6 +48,7 @@ class TaskRepository{
         if(($subTasks = $this->getTree($task["id"])) == true)
             $task["subTasks"] = $subTasks; 
     }
+    
     protected function getSubTasksFromArray($withTree = true){
         if(($tasks = $this->query->get()) == true && $withTree == true){
             //making tasks tree
@@ -52,12 +58,13 @@ class TaskRepository{
         }
         return $tasks;
     }
+
     protected function getTree(int $id){
         $this->initDafaultTaskQuery();
         
         $this->query->where("parent_id",$id);
  
-        return $this->getSubTasksFromArray($this->withTree)->toArray();  
+        return $this->getSubTasksFromArray()->toArray();  
     }
     public function setOrder(array $sort):void{
         $this->sort = $sort;
@@ -67,10 +74,10 @@ class TaskRepository{
         $this->initDafaultTaskQuery();
         $this->query->where("parent_id",0); //get root tasks
         
-        return $this->getSubTasksFromArray($this->withTree);
+        return $this->getSubTasksFromArray();
     }
 
-    public function getById($id){
+    public function getById(int $id){
    
         $this->initDafaultTaskQuery();
 
@@ -98,7 +105,7 @@ class TaskRepository{
         
         return $this->getSubTasksFromArray($this->withTree);
     }
-    public function fullTextSearch($query){
+    public function fullTextSearch(string $query){
         $this->initDafaultTaskQuery();
         $this->query->whereRaw($this->fullTextQuery, $query);
         return $this->getSubTasksFromArray($this->withTree);

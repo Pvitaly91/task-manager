@@ -19,6 +19,7 @@ class TaskObserver
     public function creating(Task $task): void
     {
         $task->user_id = $this->userId;
+        $task->status = TaskStatus::todo->value;
     }
     
     function forbidden($id,$action){
@@ -35,6 +36,11 @@ class TaskObserver
         //check if we try to change task status and can change status
         if(!$task->checkEditableStatus() && $task->getTaskStatus() != $task->status){
             Abort(403,"Update not allowed");
+        }
+        if($task->status == TaskStatus::done->value){
+            $task->completed_at = date('Y-m-d H:i:s');
+        }else{
+            $task->completed_at = NULL;
         }
     }
 

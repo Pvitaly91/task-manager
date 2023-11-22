@@ -8,18 +8,34 @@ use ReflectionClass;
 abstract class BaseDto{
     protected static $toCamelCase = true;
     
+    /**
+     * transform snake case string to camel case string
+     *
+     * @param string $input
+     * @return string
+     */
     protected static function snakeCaseToCamelCase(string $input):string
     {
       $output = str_replace('_', '', ucwords($input, '_'));
       $output = lcfirst($output);
       return $output;
     }
-
+    /**
+     * transform camel case string to snake case string
+     *
+     * @param string $input
+     * @return string
+     */
     protected static function camelCaseToSnakeCase(string $input):string
     {
         return strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $input));
     }
-
+    /**
+     * Make array  for initialization Dto class
+     *
+     * @param array $data
+     * @return array
+     */
     protected static function makeArray(array $data ):array{
        $formData = [];
        
@@ -28,9 +44,9 @@ abstract class BaseDto{
             $methodName = "";
             
             if(property_exists(static::class,$propertyName)) {
-                $methodName = "set".ucfirst(self::snakeCaseToCamelCase($name))."Attribute";
+                $methodName = "set".ucfirst(self::snakeCaseToCamelCase($name))."Attribute"; //method name like as setPropertyNameAttribute for redefinition input param call in child Dto class
                 if(method_exists(static::class,$methodName)){
-                    
+                    //call set attribute method in child class
                     $reflectionClass = new ReflectionClass(static::class);
                     $reflectionMethod = $reflectionClass->getMethod($methodName);
                     $formData[$propertyName] = $reflectionMethod->invokeArgs(null,[$value]);
@@ -50,6 +66,12 @@ abstract class BaseDto{
    
         return $formData;
     }
+    /**
+     * initialization dto class from array and make collection dto classes
+     *
+     * @param [type] $collectionTask
+     * @return void
+     */
     public static function collection($collectionTask){
         $collection =[];
         foreach($collectionTask as $data){
@@ -60,11 +82,21 @@ abstract class BaseDto{
         }
         return $collection ;
     }
+    /**
+     * initialization one dto class
+     *
+     * @param array $data
+     * @return static
+     */
     public static function fromArray(array $data):static{
 
         return new static(...self::makeArray($data));
     }
-
+    /**
+     * transform dto class to array need for using in laravel resource
+     *
+     * @return array
+     */
     public function toArray():array{
         return (array)$this;
     }

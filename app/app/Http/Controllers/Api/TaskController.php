@@ -4,16 +4,17 @@ namespace App\Http\Controllers\Api;
 
 use App\DTO\TaskDto;
 use App\Http\Requests\TaskChangeStatus;
+use App\Http\Requests\TaskUpdateRequest;
 use App\Http\Requests\TaskWithTreeRequest;
 use App\Models\Task;
 use App\DTO\TaskStoreDto;
 use App\Services\TaskService;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\TaskResource;
-use App\Repositories\TaskRepository;
 use App\Http\Requests\TaskSortRequest;
 use App\Http\Requests\TaskStoreRequest;
 use App\Http\Requests\TaskFilterRequest;
+use App\Repositories\RepositoryInterface;
 
 class TaskController extends Controller
 {
@@ -25,7 +26,7 @@ class TaskController extends Controller
     public function index(
         TaskFilterRequest $filterRequest,
         TaskSortRequest $sortRequest,
-        TaskRepository $taskRepository,
+        RepositoryInterface $taskRepository,
         TaskWithTreeRequest $taskWithTreeRequest
     )
     {
@@ -51,7 +52,7 @@ class TaskController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id,TaskRepository $taskRepository, TaskWithTreeRequest $taskWithTreeRequest)
+    public function show(string $id,RepositoryInterface $taskRepository, TaskWithTreeRequest $taskWithTreeRequest)
     {
         if(($teeFlag = $taskWithTreeRequest->validated()) == true){ 
             $taskRepository->setTreeFlag($teeFlag["tree"]);
@@ -80,7 +81,7 @@ class TaskController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(TaskStoreRequest $request, Task $task)
+    public function update(TaskUpdateRequest $request, Task $task)
     {
         $data = TaskStoreDto::fromArray($request->validated())->toArray();
         $task->update($data);
